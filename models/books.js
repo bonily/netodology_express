@@ -10,9 +10,9 @@ const { v4: uuid }  = require('uuid');
 * @param {string} fileCover,
 * @param {string} fileName
 */
-const createNewBook = (title = '', description = '', authors = '', favorite = '', fileCover = '', fileName = '', id = uuid()) => {
+const createNewBook = (title = '', description = '', authors = '', favorite = '', fileCover = '', fileName = '', fileBook = {}, id = uuid()) => {
  return {
-   id, title, description, authors, favorite, fileCover, fileName
+   id, title, description, authors, favorite, fileCover, fileName, fileBook,
  }
 };
 
