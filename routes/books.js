@@ -10,17 +10,58 @@ const store = {
 const {books} = store;
 
 const badRequest = (res) => {
-  const error = {
-    errCode: 404,
-    errMessage: 'Страница не найдена'
-  }
     res.status = 404;
-    res.json(error);
+    res.redirect('/404');
     return res;
 };
 
 router.get('/', (req, res) => {
-  res.json(books);
+  res.render('index', {
+    title: 'Список книг',
+    books,
+  })
+});
+
+router.get('/create', (req, res) => {
+  res.render("books/create", {
+      title: "Добавить новую книгу",
+  });
+});
+
+router.get('/update/:id', (req, res) => {
+  const {id} = req.params;
+
+  const currentBookIndex = books.findIndex(book => book.id === id);
+  const currentBook = books[currentBookIndex];
+  res.render("books/update", {
+      title: "Изменить книгу",
+      book: currentBook
+  });
+});
+
+
+router.post('/create', (req, res) => {
+  const {title, description, authors, favorite, fileCover, fileName} = req.body;
+    const newBook = createNewBook(title, description, authors, favorite, fileCover, fileName, fileBook);
+    books.push(newBook);
+    res.redirect('/books');
+});
+
+router.post('/update/:id', (req, res) => {
+  const {id} = req.params;
+  const currentBookIndex = books.findIndex(book => book.id === id);
+  const currentBook = books[currentBookIndex];
+  const {title, description, authors, favorite, fileCover, fileName} = req.body;
+
+    if (currentBookIndex > -1) {
+      const updatedBook = {
+        ...currentBook,
+            title, description, authors, favorite, fileCover, fileName
+      };
+  
+      books[currentBookIndex] = updatedBook;
+    res.redirect('/books');
+    }
 });
 
 router.get('/:id', (req, res) => {
@@ -28,53 +69,22 @@ router.get('/:id', (req, res) => {
 
   const currentBook = books.find(book => book.id === id);
 
-  currentBook ? res.json(currentBook) : badRequest(res)
+  currentBook ? res.render('books/view', {
+    title: `Книга ${currentBook.title}`,
+    book: currentBook,
+  }) :
+  badRequest(res);
 
 });
 
-router.post('',  fileMiddleware.single('book-file'), (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName} = req.body;
-  if (req.file) {
-    const fileBook = req.file;
-    const newBook = createNewBook(title, description, authors, favorite, fileCover, fileName, fileBook);
-    books.push(newBook);
-    res.json(newBook);
-  }
 
-  else {
-    res.json(null);
-}
-
-});
-
-router.put('/:id', (req, res) => {
-  const {id} = req.params;
-  const {title = '', description = '', authors = '', favorite = '', fileCover = '', fileName = ''} = req.body;
-
-  const currentBookIndex = books.findIndex(book => book.id === id);
-  const currentBook = books[currentBookIndex];
-
-  if (currentBookIndex > -1) {
-    const updatedBook = {
-      ...currentBook,
-          title, description, authors, favorite, fileCover, fileName
-    };
-
-    books[currentBookIndex] = updatedBook;
-    res.json(updatedBook);
-  } else {
-    badRequest(res);
-  }
-
-});
-
-router.delete('/:id', (req, res) => {
+router.post('/delete/:id', (req, res) => {
   const {id} = req.params;
   const currentBookIndex = books.findIndex(book => book.id === id);
 
   if (currentBookIndex > -1) {
     books.splice(currentBookIndex, 1);
-    res.json('OK')
+    res.redirect('/books');
     } else {
     badRequest(res);
   }
