@@ -11,6 +11,9 @@ const API_USER = '/api/user';
 
 const app = express();
 
+const COUNTER_URL = process.env.COUNTER_URL || 'localhost';
+console.log(COUNTER_URL)
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('views', './src/views');
@@ -20,6 +23,8 @@ app.use('', indexRouter)
 app.use(API_USER, userRouter);
 app.use(BOOKS, booksRouter);
 app.use(API_BOOKS, booksApiRouter);
+
+
 
 
 const PORT = process.env.PORT || 3000;

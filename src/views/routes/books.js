@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const axios = require('axios')
 const fileMiddleware = require('../middleware/file');
 
 const createNewBook = require('../models/books.js');
@@ -9,6 +10,7 @@ const store = {
 };
 const {books} = store;
 
+const COUNTER_URL = process.env.COUNTER_URL || 'localhost';
 
 const badRequest = (res) => {
     res.status = 404;
@@ -29,11 +31,13 @@ router.get('/create', (req, res) => {
   });
 });
 
+
 router.get('/update/:id', (req, res) => {
   const {id} = req.params;
 
   const currentBookIndex = books.findIndex(book => book.id === id);
   const currentBook = books[currentBookIndex];
+  
   res.render("books/update", {
       title: "Изменить книгу",
       book: currentBook
@@ -66,14 +70,18 @@ router.post('/update/:id', (req, res) => {
     }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const {id} = req.params;
+
+  await axios.post(`http://${COUNTER_URL}/counter/${id}/incr`).catch(err => console.log(err.message));
+  const counter =  await axios.get(`http://${COUNTER_URL}/counter/${id}`).then(response => response.data)
 
   const currentBook = books.find(book => book.id === id);
 
   currentBook ? res.render('books/view', {
     title: `Книга ${currentBook.title}`,
     book: currentBook,
+    counter: counter
   }) :
   badRequest(res);
 

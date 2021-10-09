@@ -1,0 +1,15 @@
+version: "1.0"
+services:
+  counter:
+    build: ./counter
+    volumes:
+      - ./counter/store.js:/app/store.js
+  library:
+    build: .
+    ports:
+      - 80:3002
+    environment:
+      - PORT=3002
+      - COUNTER_URL=counter:3000
+    links:
+      - counter
