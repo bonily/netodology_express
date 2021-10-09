@@ -33,10 +33,10 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('',  fileMiddleware.single('book-file'), (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName} = req.body;
+  const {title, desrciption, authors, favorite, fileCover, fileName} = req.body;
   if (req.file) {
     const fileBook = req.file;
-    const newBook = createNewBook(title, description, authors, favorite, fileCover, fileName, fileBook);
+    const newBook = createNewBook(title, desrciption, authors, favorite, fileCover, fileName, fileBook);
     books.push(newBook);
     res.json(newBook);
   }
@@ -49,7 +49,7 @@ router.post('',  fileMiddleware.single('book-file'), (req, res) => {
 
 router.put('/:id', (req, res) => {
   const {id} = req.params;
-  const {title = '', description = '', authors = '', favorite = '', fileCover = '', fileName = ''} = req.body;
+  const {title = '', desrciption = '', authors = '', favorite = '', fileCover = '', fileName = ''} = req.body;
 
   const currentBookIndex = books.findIndex(book => book.id === id);
   const currentBook = books[currentBookIndex];
@@ -57,7 +57,7 @@ router.put('/:id', (req, res) => {
   if (currentBookIndex > -1) {
     const updatedBook = {
       ...currentBook,
-          title, description, authors, favorite, fileCover, fileName
+          title, desrciption, authors, favorite, fileCover, fileName
     };
 
     books[currentBookIndex] = updatedBook;

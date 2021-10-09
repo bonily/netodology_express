@@ -4,15 +4,15 @@ const { v4: uuid }  = require('uuid');
 /**
 * @param {string} id,
 * @param {string} title,
-* @param {string} description,
+* @param {string} desrciption,
 * @param {string} authors,
 * @param {string} favorite,
 * @param {string} fileCover,
 * @param {string} fileName
 */
-const createNewBook = (title = '', description = '', authors = '', favorite = '', fileCover = '', fileName = '', fileBook = {}, id = uuid()) => {
+const createNewBook = (title = '', desrciption = '', authors = '', favorite = '', fileCover = '', fileName = '', fileBook = {}, id = uuid()) => {
  return {
-   id, title, description, authors, favorite, fileCover, fileName, fileBook,
+   id, title, desrciption, authors, favorite, fileCover, fileName, fileBook,
  }
 };
 

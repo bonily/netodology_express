@@ -9,6 +9,7 @@ const store = {
 };
 const {books} = store;
 
+
 const badRequest = (res) => {
     res.status = 404;
     res.redirect('/404');
@@ -41,9 +42,10 @@ router.get('/update/:id', (req, res) => {
 
 
 router.post('/create', (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName} = req.body;
-    const newBook = createNewBook(title, description, authors, favorite, fileCover, fileName, fileBook);
+  const {title, desrciption, authors, favorite, fileCover, fileName} = req.body;
+    const newBook = createNewBook(title, desrciption, authors, favorite, fileCover, fileName);
     books.push(newBook);
+    console.log(books)
     res.redirect('/books');
 });
 
@@ -51,12 +53,12 @@ router.post('/update/:id', (req, res) => {
   const {id} = req.params;
   const currentBookIndex = books.findIndex(book => book.id === id);
   const currentBook = books[currentBookIndex];
-  const {title, description, authors, favorite, fileCover, fileName} = req.body;
+  const {title, desrciption, authors, favorite, fileCover, fileName} = req.body;
 
     if (currentBookIndex > -1) {
       const updatedBook = {
         ...currentBook,
-            title, description, authors, favorite, fileCover, fileName
+            title, desrciption, authors, favorite, fileCover, fileName
       };
   
       books[currentBookIndex] = updatedBook;
