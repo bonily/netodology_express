@@ -6,12 +6,15 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title"><%= book.title %></h5>
-        <p class="card-text">Просмотры <%= counter %>.</p>
-        <p class="card-text"><%= book.desc %>.</p>
+        <p class="card-text"><%= book.description %>.</p>
         <p class="card-text"><%= book.authors %>.</p>
         <p class="card-text"><%= book.favorite %>.</p>
         <div class="text-right">
-          <form action="/books/<%= book.id %>" method="PUT" class="d-inline">
+          <form
+            action="/books/update/<%= book.id %>"
+            method="PUT"
+            class="d-inline"
+          >
             <button class="btn btn-sm btn-primary">
               <i class="fa fa-pencil" aria-hidden="true"></i>
             </button>

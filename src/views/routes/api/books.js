@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fileMiddleware = require('../../middleware/file');
 
-const createNewBook = require('../../models/books.js');
+const createNewBook = require('../../models/book.js');
 
 const store = {
   books: [createNewBook(), createNewBook()],

@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios')
-const fileMiddleware = require('../middleware/file');
 
-const createNewBook = require('../models/books.js');
+const Book = require('../models/book');
 
-const store = {
-  books: [createNewBook(), createNewBook()],
-};
-const {books} = store;
-
-const COUNTER_URL = process.env.COUNTER_URL || 'localhost';
 
 const badRequest = (res) => {
     res.status = 404;
@@ -18,7 +10,9 @@ const badRequest = (res) => {
     return res;
 };
 
-router.get('/', (req, res) => {
+
+router.get('/', async(req, res) => {
+  const books = await Book.find();
   res.render('index', {
     title: 'Список книг',
     books,
@@ -32,11 +26,17 @@ router.get('/create', (req, res) => {
 });
 
 
-router.get('/update/:id', (req, res) => {
+router.get('/update/:id', async(req, res) => {
   const {id} = req.params;
 
-  const currentBookIndex = books.findIndex(book => book.id === id);
-  const currentBook = books[currentBookIndex];
+  let currentBook;
+
+  try {
+    currentBook = await Book.findById(id);
+  } catch (e) {
+      console.error(e);
+      badRequest(res);
+  }
   
   res.render("books/update", {
       title: "Изменить книгу",
@@ -45,70 +45,76 @@ router.get('/update/:id', (req, res) => {
 });
 
 
-router.post('/create', (req, res) => {
-  const {title, desrciption, authors, favorite, fileCover, fileName} = req.body;
-    const newBook = createNewBook(title, desrciption, authors, favorite, fileCover, fileName);
-    books.push(newBook);
-    console.log(books)
+router.post('/create', async(req, res) => {
+  const {title, description, authors, favorite, fileCover, fileName} = req.body;
+
+  const newBook = new Book({
+    title, description, authors, favorite, fileCover, fileName
+  });
+  
+  try {
+    await newBook.save();
     res.redirect('/books');
+  } catch(e) {
+    console.error(e)
+  }
+
 });
 
-router.post('/update/:id', (req, res) => {
+router.post('/update/:id', async(req, res) => {
   const {id} = req.params;
-  const currentBookIndex = books.findIndex(book => book.id === id);
-  const currentBook = books[currentBookIndex];
-  const {title, desrciption, authors, favorite, fileCover, fileName} = req.body;
+  const {title, description, authors, favorite, fileCover, fileName} = req.body;
 
-    if (currentBookIndex > -1) {
-      const updatedBook = {
-        ...currentBook,
-            title, desrciption, authors, favorite, fileCover, fileName
-      };
-  
-      books[currentBookIndex] = updatedBook;
+  try {
+    await Book.findByIdAndUpdate(id, {title, description, authors, favorite, fileCover, fileName});
+  } catch (e) {
+      console.error(e);
+      res.status(404).redirect('/404');
+  }
     res.redirect('/books');
-    }
 });
 
 router.get('/:id', async (req, res) => {
   const {id} = req.params;
 
-  await axios.post(`http://${COUNTER_URL}/counter/${id}/incr`).catch(err => console.log(err.message));
-  const counter =  await axios.get(`http://${COUNTER_URL}/counter/${id}`).then(response => response.data)
+  let currentBook;
 
-  const currentBook = books.find(book => book.id === id);
+  try {
+    currentBook = await Book.findById(id);
+  } catch (e) {
+      console.error(e);
+      badRequest(res);
+  }
 
-  currentBook ? res.render('books/view', {
+  currentBook && res.render('books/view', {
     title: `Книга ${currentBook.title}`,
     book: currentBook,
-    counter: counter
-  }) :
-  badRequest(res);
-
+  }) 
 });
 
 
-router.post('/delete/:id', (req, res) => {
+router.post('/delete/:id', async(req, res) => {
   const {id} = req.params;
-  const currentBookIndex = books.findIndex(book => book.id === id);
+  console.log(id)
 
-  if (currentBookIndex > -1) {
-    books.splice(currentBookIndex, 1);
-    res.redirect('/books');
-    } else {
+  try {
+    await Book.deleteOne({_id: id});
+  } catch (e) {
+    console.error(e);
     badRequest(res);
   }
+  res.redirect('/books');
 });
 
-router.get('/:id/download', (req, res) => {
-  const {id} = req.params;
-  const book = store.books.find(book => book.id === id);
-  const filename = book.fileBook.filename;
-  res.download(__dirname+`/../books/img/${filename}`, `${book.filename}`, err=>{
-      if (err){
-          badRequest(res)
-      }
-  });
-});
+// router.get('/:id/download', (req, res) => {
+//   const {id} = req.params;
+//   const book = store.books.find(book => book.id === id);
+//   const filename = book.fileBook.filename;
+//   res.download(__dirname+`/../books/img/${filename}`, `${book.filename}`, err=>{
+//       if (err){
+//           badRequest(res)
+//       }
+//   });
+// });
 
 module.exports = router;
