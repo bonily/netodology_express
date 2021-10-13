@@ -11,6 +11,7 @@ const store = {
 const {books} = store;
 
 const COUNTER_URL = process.env.COUNTER_URL || 'localhost';
+console.log(COUNTER_URL)
 
 const badRequest = (res) => {
     res.status = 404;
