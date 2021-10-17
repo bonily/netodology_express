@@ -11,7 +11,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-password}
       - MONGO_INITDB_DATABASE=${DB_NAME:-books_database}
     volumes:
-      - ./store:/data
+      - ./store:/data/db
 
   mongo-express:
     image: mongo-express
