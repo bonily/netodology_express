@@ -16,6 +16,7 @@ router.get('/', async(req, res) => {
   res.render('index', {
     title: 'Список книг',
     books,
+    user: req.user
   })
 });
 

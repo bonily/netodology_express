@@ -1,0 +1,47 @@
+<%- include("../partials/layout-start", {title: title}) %>
+<h1><%= title %></h1>
+<a class="btn btn-sm btn-primary" href="/user/logout">Logout</a>
+<form method="POST" class="mt-5">
+  <div class="form-group">
+    <label for="username">Логин</label>
+    <input
+      type="text"
+      value="<%= user.username %>"
+      name="username"
+      class="form-control"
+      id="username"
+      disabled="true"
+    />
+  </div>
+  <div class="form-group">
+    <label for="fullName">Полное имя</label>
+    <input
+      type="text"
+      value="<%= user.fullName %>"
+      name="fullName"
+      class="form-control"
+      id="fullName"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="inputDesc">Возраст</label>
+    <input
+      type="number"
+      value="<%= user.age %>"
+      name="age"
+      class="form-control"
+      id="age"
+    />
+  </div>
+  <div class="form-group">
+    <p>Любимые книги</p>
+    <% user.favoriteBooks.map((el, idx) => { %>
+    <p>el</p>
+    <% }) %>
+  </div>
+  <div class="form-group text-right">
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+  </div>
+</form>
+<%- include("../partials/layout-end") %>

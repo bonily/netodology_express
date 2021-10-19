@@ -1,0 +1,40 @@
+<%- include("../partials/layout-start", {title: title}) %>
+<h1><%= title %></h1>
+
+<div class="row">
+  <div class="col-sm-6">
+    <form method="POST" class="mt-5">
+      <div class="form-group">
+        <label for="username">Логин</label>
+        <input
+          type="text"
+          name="username"
+          class="form-control"
+          id="username"
+          required="true"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password">Пароль</label>
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          id="password"
+          required="true"
+        />
+      </div>
+      <p><%= message[0] %></p>
+      <div class="form-group text-right">
+        <button type="submit" class="btn btn-primary" formaction="/user/signup">
+          Зарегистрироваться
+        </button>
+        <button type="submit" class="btn btn-primary" formaction="/user/login">
+          Войти в систему
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include("../partials/layout-end") %>

@@ -11,7 +11,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-password}
       - MONGO_INITDB_DATABASE=${DB_NAME:-books_database}
     volumes:
-      - ./store:/data/db
+      - ./store:/data
 
   mongo-express:
     image: mongo-express
@@ -33,7 +33,7 @@ services:
       - PORT=3000
       - DB_USERNAME=${DB_USERNAME:-root}
       - DB_PASSWORD=${DB_PASSWORD:-password}
-      - DB_NAME=${DB_NAME:-todos_database}
-      - DB_HOST=mongodb://mongodb:27017
+      - DB_NAME=${DB_NAME:-books_database}
+      - DB_HOST=mongodb://mongodb:27017/admin
     depends_on:
       - mongodb

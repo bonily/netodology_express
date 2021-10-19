@@ -1,4 +1,10 @@
-<%- include("./partials/layout-start", {title: title}) %>
+<%- include("./partials/layout-start", {title: title}) %> <% if(!user) { %>
+<p>
+  Добро пожаловать! Для просмотра книг необходимо
+  <a href="/user/login">Войти в систему</a>
+</p>
+<% } else { %>
+<p>Добро пожаловать, <a href="/user/me"> <%= user.username %>.</a></p>
 <h1><%= title %></h1>
 
 <a class="btn btn-sm btn-primary" href="/books/create">Добавить книгу</a>
@@ -42,4 +48,4 @@
 </table>
 <% }else { %>
 <h3 class="mt-5">Записей пока нет</h3>
-<% } %> <%- include("./partials/layout-end") %>
+<% } %> <% } %> <%- include("./partials/layout-end") %>
