@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
+const path = require('path');
+const http = require('http');
+const socketIO = require('socket.io');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const flash = require('connect-flash');
@@ -57,6 +60,14 @@ passport.deserializeUser(async(id, cb) => {
 );
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+const session = require('express-session');
+const sessionMidleware = session({
+  secret: process.env.COOKIE_SECRET || 'секрет-секрет',
+  resave: false,
+  saveUninitialized: false,
+})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -65,14 +76,15 @@ app.set("view engine", "ejs");
 app.use(flash());
 
 
-app.use(require('express-session')({
-    secret: process.env.COOKIE_SECRET || 'секрет-секрет',
-    resave: false,
-    saveUninitialized: false,
-  }))
+app.use(sessionMidleware);
+io.use((socket, next) => {
+  sessionMidleware(socket.request, {}, next)
+})
 
-app.use(passport.initialize())
-app.use(passport.session())
+require('./src/views/routes/api/sockets')(io);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('', indexRouter);
 app.use(USER, userRouter);
@@ -101,7 +113,7 @@ async function start() {
         //   useUnifiedTopology: true
       });
 
-      app.listen(PORT, () => {
+      server.listen(PORT, () => {
           console.log(`Server is running on port ${PORT}`);
       })
   } catch (e) {

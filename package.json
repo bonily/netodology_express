@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon -L --watch ./ index.js"
   },
   "author": "bonily",
   "license": "ISC",
@@ -24,6 +24,7 @@
     "passport": "^0.5.0",
     "passport-local": "^1.0.0",
     "redis": "^3.1.2",
+    "socket.io": "^4.3.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

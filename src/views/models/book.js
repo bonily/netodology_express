@@ -24,6 +24,9 @@ const bookSchema = new Schema({
       type: String,
       default: ''
     },
+    comments: {
+        type: Array,
+    }
 });
 
 module.exports = model('Book', bookSchema);

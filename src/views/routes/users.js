@@ -20,7 +20,6 @@ router.post('/login',
         {
             failureRedirect: '/user/login',
             failureFlash: true,
-
         },
     ),
     (req, res) => {

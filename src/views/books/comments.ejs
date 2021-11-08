@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8">
+      <div id="list" class="list-group">
+        <% book.comments.map((el, idx) => { %>
+        <div class="list-group-item list-group-item-action">
+          <small><%= el.user %></small>
+          <p class="mb-1"><%= el.text %></p>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="form-group">
+        <p id="user"><%= user.username %></p>
+        <label for="text">Комментарий</label>
+        <textarea
+          placeholder="message"
+          class="form-control"
+          id="text"
+        ></textarea>
+      </div>
+      <button type="submit" id="send-room" class="btn btn-primary text-right">
+        Оставить комментарий к книге
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const bookName = location.pathname.split("books/").pop();
+  const username = document.querySelector("#user").textContent;
+  console.log(username);
+  const socket = io.connect(`/`, {
+    query: `bookName=${bookName}`,
+  });
+  const boxList = document.querySelector("#list");
+
+  const inputText = document.querySelector("#text");
+  const sendAll = document.querySelector("#send-all");
+  const sendMe = document.querySelector("#send-me");
+  const sendRoom = document.querySelector("#send-room");
+
+  const getTmp = (msg) => {
+    return `
+              <div class="list-group-item list-group-item-action ${
+                msg.username !== username && "text-right"
+              }">
+                      <small>${msg.username}</small>
+                  <p class="mb-1">${msg.text}</p>
+              </div>
+      `;
+  };
+
+  socket.on("message-to-book", (msg) => {
+    const div = getTmp(msg);
+    boxList.insertAdjacentHTML("beforeend", div);
+  });
+
+  sendRoom.addEventListener("click", () => {
+    socket.emit("message-to-book", {
+      text: inputText.value,
+    });
+  });
+</script>

@@ -14,7 +14,7 @@ const badRequest = (res) => {
 router.get('/', async(req, res) => {
   const books = await Book.find();
   res.render('index', {
-    title: 'Список книг',
+    title: 'Список книг бла бла',
     books,
     user: req.user
   })
@@ -77,7 +77,6 @@ router.post('/update/:id', async(req, res) => {
 
 router.get('/:id', async (req, res) => {
   const {id} = req.params;
-
   let currentBook;
 
   try {
@@ -90,6 +89,7 @@ router.get('/:id', async (req, res) => {
   currentBook && res.render('books/view', {
     title: `Книга ${currentBook.title}`,
     book: currentBook,
+    user: req.user,
   }) 
 });
 

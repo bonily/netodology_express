@@ -7,4 +7,4 @@ RUN npm i
 COPY ./index.js /app/
 COPY ./src/ ./src
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
