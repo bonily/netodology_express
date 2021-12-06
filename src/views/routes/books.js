@@ -1,7 +1,17 @@
+var inversify = require("inversify");
+require("reflect-metadata");
+const BookRepository  = require('../repository/book');
+
+
 const express = require('express');
 const router = express.Router();
-
 const Book = require('../models/book');
+
+inversify.decorate(inversify.injectable(), BookRepository);
+
+const container = new inversify.Container();
+container.bind(BookRepository).toSelf();
+
 
 
 const badRequest = (res) => {
@@ -12,7 +22,8 @@ const badRequest = (res) => {
 
 
 router.get('/', async(req, res) => {
-  const books = await Book.find();
+  const repo = container.get(BookRepository);
+  const books = await repo.getBooks();
   res.render('index', {
     title: 'Список книг бла бла',
     books,
@@ -29,11 +40,13 @@ router.get('/create', (req, res) => {
 
 router.get('/update/:id', async(req, res) => {
   const {id} = req.params;
-
+  const repo = container.get(BookRepository);
+ 
   let currentBook;
 
   try {
-    currentBook = await Book.findById(id);
+    currentBook = await repo.getBook(id);
+
   } catch (e) {
       console.error(e);
       badRequest(res);
@@ -49,12 +62,10 @@ router.get('/update/:id', async(req, res) => {
 router.post('/create', async(req, res) => {
   const {title, description, authors, favorite, fileCover, fileName} = req.body;
 
-  const newBook = new Book({
-    title, description, authors, favorite, fileCover, fileName
-  });
-  
+  const repo = container.get(BookRepository);
+
   try {
-    await newBook.save();
+    await repo.createBook(title, description, authors, favorite, fileCover, fileName)
     res.redirect('/books');
   } catch(e) {
     console.error(e)
@@ -65,9 +76,10 @@ router.post('/create', async(req, res) => {
 router.post('/update/:id', async(req, res) => {
   const {id} = req.params;
   const {title, description, authors, favorite, fileCover, fileName} = req.body;
+  const repo = container.get(BookRepository);
 
   try {
-    await Book.findByIdAndUpdate(id, {title, description, authors, favorite, fileCover, fileName});
+    await repo.updateBook(id, title, description, authors, favorite, fileCover, fileName);
   } catch (e) {
       console.error(e);
       res.status(404).redirect('/404');
@@ -77,10 +89,11 @@ router.post('/update/:id', async(req, res) => {
 
 router.get('/:id', async (req, res) => {
   const {id} = req.params;
+  const repo = container.get(BookRepository);
   let currentBook;
 
   try {
-    currentBook = await Book.findById(id);
+    currentBook = await repo.getBook(id);
   } catch (e) {
       console.error(e);
       badRequest(res);
@@ -96,10 +109,10 @@ router.get('/:id', async (req, res) => {
 
 router.post('/delete/:id', async(req, res) => {
   const {id} = req.params;
-  console.log(id)
+  const repo = container.get(BookRepository);
 
   try {
-    await Book.deleteOne({_id: id});
+    await repo.deleteBook(id);
   } catch (e) {
     console.error(e);
     badRequest(res);
